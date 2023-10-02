@@ -2,14 +2,14 @@
 
 #if _WIN32
 #define TK_WINDOWS 1
-#include "TrickDefinitionsWin.h"
+#include "TrickDefinitions_win.h"
 #else
 #define TK_WINDOWS 0
 #endif // _WIN32
 
 #if __linux__
 #define TK_LINUX 1
-#include "TrickDefinitionsLinux.h"
+#include "TrickDefinitions_linux.h"
 #else
 #define TK_LINUX 0
 #endif // __linux__

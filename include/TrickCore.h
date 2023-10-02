@@ -1,6 +1,6 @@
 #pragma once
 
 #include "TrickDefinitions.h"
-#include "TrickPrimitiveTyoes.h"
+#include "TrickPrimitiveTypes.h"
 #include "TrickLimits.h"
 #include "TrickAssert.h"

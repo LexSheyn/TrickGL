@@ -12,10 +12,13 @@ add_compile_definitions(TK_EXPORT=1)
 
 get_filename_component(PROJECT_PARENT_DIRECTORY ${CMAKE_SOURCE_DIR} DIRECTORY)
 
-# Directories
+# CMake directories
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
+#
+
+# Project directories
 set(PROJECT_DEPENDENCY_DIR         ${CMAKE_SOURCE_DIR}/dependencies)
 #
 
