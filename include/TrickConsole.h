@@ -1,6 +1,8 @@
 #pragma once
 
-#include "TrickCore.h"
+#include "TrickDefinitions.h"
+#include "TrickPrimitiveTypes.h"
+#include "TrickLimits.h"
 
 typedef enum TkConsoleMessageColor
 {

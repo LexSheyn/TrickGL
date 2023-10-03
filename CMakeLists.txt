@@ -19,16 +19,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 #
 
 # Project directories
-set(PROJECT_DEPENDENCY_DIR         ${CMAKE_SOURCE_DIR}/dependencies)
+set(PROJECT_DEPENDENCY_DIR ${CMAKE_SOURCE_DIR}/dependencies)
 #
 
 # Dependencies
-file(GLOB_RECURSE OPENGL_HEADERS "${PROJECT_DEPENDENCY_DIR}/OpenGL/include/*.h")
-if (WIN32)
-file(GLOB_RECURSE OPENGL_LIB     "${PROJECT_DEPENDENCY_DIR}/OpenGL/lib/*.lib")
-elseif (UNIX)
-file(GLOB_RECURSE OPENGL_LIB     "${PROJECT_DEPENDENCY_DIR}/OpenGL/lib/*.so")
-endif()
+set(OPENGL_INCLUDE_DIR "${PROJECT_DEPENDENCY_DIR}/OpenGL/include")
+
+file(GLOB_RECURSE OPENGL_HEADERS "${OPENGL_INCLUDE_DIR}/*.h")
+
+find_package(OpenGL REQUIRED)
 #
 
 # Source code
@@ -48,4 +47,4 @@ target_include_directories(${TARGET_NAME} PUBLIC
                            "${PROJECT_DEPENDENCY_DIR}/OpenGL/include")
 
 target_link_libraries(${TARGET_NAME} PUBLIC
-                      ${OPENGL_LIB})
+                      OpenGL32)
