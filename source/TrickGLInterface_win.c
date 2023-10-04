@@ -61,6 +61,7 @@ TkResult TK_CALL tkCreateGLInterface(void* Allocator, TkGLInterface* p_GLInterfa
     GLInterface->pfn_glLineWidth   = wglGetProcAddress("glLineWidth");
     GLInterface->pfn_glPointSize   = wglGetProcAddress("glPointSize");
     GLInterface->pfn_glPolygonMode = wglGetProcAddress("glPolygonMode");
+    GLInterface->pfn_glScissor     = wglGetProcAddress("glScissor");
 
     return TK_SUCCESS;
 }
@@ -70,32 +71,37 @@ void TK_CALL tkDestroyGLInterface(TkGLInterface GLInterface)
     free(GLInterface);
 }
 
-void tkGLCullFace(TkGLInterface GLInterface, GLenum Mode)
+void tkglCullFace(TkGLInterface GLInterface, GLenum Mode)
 {
     GLInterface->pfn_glGullFace(Mode);
 }
 
-void tkGLFronFace(TkGLInterface GLInterface, GLenum Mode)
+void tkglFronFace(TkGLInterface GLInterface, GLenum Mode)
 {
     GLInterface->pfn_glFrontFace(Mode);
 }
 
-void tkGLHint(TkGLInterface GLInterface, GLenum Target, GLenum Mode)
+void tkglHint(TkGLInterface GLInterface, GLenum Target, GLenum Mode)
 {
     GLInterface->pfn_glHint(Target, Mode);
 }
 
-void tkGLLineWidth(TkGLInterface GLInterface, GLfloat Width)
+void tkglLineWidth(TkGLInterface GLInterface, GLfloat Width)
 {
     GLInterface->pfn_glLineWidth(Width);
 }
 
-void tkGLPointSize(TkGLInterface GLInterface, GLfloat Size)
+void tkglPointSize(TkGLInterface GLInterface, GLfloat Size)
 {
     GLInterface->pfn_glPointSize(Size);
 }
 
-void tkGLPolygonMode(TkGLInterface GLInterface, GLenum Face, GLenum Mode)
+void tkglPolygonMode(TkGLInterface GLInterface, GLenum Face, GLenum Mode)
 {
     GLInterface->pfn_glPolygonMode(Face, Mode);
+}
+
+void tkglScissor(TkGLInterface GLInterface, GLint X, GLint Y, GLint Width, GLint Height)
+{
+    GLInterface->pfn_glScissor(X, Y, Width, Height);
 }
