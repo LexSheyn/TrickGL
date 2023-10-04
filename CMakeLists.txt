@@ -35,8 +35,7 @@ target_sources(${TARGET_NAME} PUBLIC
                ${PROJECT_SOURCES})
 
 target_include_directories(${TARGET_NAME} PUBLIC
-                           "include"
-                           "include/OpenGL")
+                           "include")
 
 target_link_libraries(${TARGET_NAME} PUBLIC
                       OpenGL32)

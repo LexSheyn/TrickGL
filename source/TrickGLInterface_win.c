@@ -1,6 +1,11 @@
 #include "TrickGLInterface.h"
 
-#include <wglext.h>
+#if TK_WINDOWS
+
+#pragma warning (push)
+#pragma warning (disable: 4113)
+
+#include <OpenGL/wglext.h>
 
 #include <stdlib.h>
 
@@ -105,3 +110,7 @@ void tkglScissor(TkGLInterface GLInterface, GLint X, GLint Y, GLint Width, GLint
 {
     GLInterface->pfn_glScissor(X, Y, Width, Height);
 }
+
+#pragma warning (pop)
+
+#endif // TK_WINDOWS

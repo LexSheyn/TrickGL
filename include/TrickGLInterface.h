@@ -2,7 +2,7 @@
 
 #include "TrickBase.h"
 
-#include <glcorearb.h>
+#include <OpenGL/glcorearb.h>
 
 TK_HANDLE(TkGLInterface);
 
