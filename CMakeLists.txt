@@ -18,15 +18,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 #
 
-# Project directories
-set(PROJECT_DEPENDENCY_DIR ${CMAKE_SOURCE_DIR}/dependencies)
-#
-
 # Dependencies
-set(OPENGL_INCLUDE_DIR "${PROJECT_DEPENDENCY_DIR}/OpenGL/include")
-
-file(GLOB_RECURSE OPENGL_HEADERS "${OPENGL_INCLUDE_DIR}/*.h")
-
+# OpenGL headers provided by the Khronos Group externally and are part of the project itself.
 find_package(OpenGL REQUIRED)
 #
 
@@ -39,12 +32,11 @@ add_library(${TARGET_NAME} SHARED)
 
 target_sources(${TARGET_NAME} PUBLIC
                ${PROJECT_HEADERS}
-               ${PROJECT_SOURCES}
-               ${OPENGL_HEADERS})
+               ${PROJECT_SOURCES})
 
 target_include_directories(${TARGET_NAME} PUBLIC
                            "include"
-                           "${PROJECT_DEPENDENCY_DIR}/OpenGL/include")
+                           "include/OpenGL")
 
 target_link_libraries(${TARGET_NAME} PUBLIC
                       OpenGL32)

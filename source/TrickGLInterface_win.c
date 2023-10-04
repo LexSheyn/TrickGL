@@ -1,35 +1,73 @@
 #include "TrickGLInterface.h"
 
-#include <glxext.h>
 #include <wglext.h>
 
-typedef void (TK_CALL* PFN_tkGLCullFace)    (GLenum Mode);
-typedef void (TK_CALL* PFN_tkGLFronFace)    (GLenum Mode);
-typedef void (TK_CALL* PFN_tkGLHint)        (GLenum Target, GLenum Mode);
-typedef void (TK_CALL* PFN_tkGLLineWidth)   (GLfloat Width);
-typedef void (TK_CALL* PFN_tkGLPointSize)   (GLfloat Size);
-typedef void (TK_CALL* PFN_tkGLPolygonMode) (GLenum Face, GLenum Mode);
+#include <stdlib.h>
 
 typedef struct TkGLInterface_T
 {
-    PFN_tkGLCullFace       pfn_glGullFace;
-    PFN_tkGLFronFace       pfn_glFrontFace;
-    PFN_tkGLHint           pfn_glHint;
-    PFN_tkGLLineWidth      pfn_glLineWidth;
-    PFN_tkGLPointSize      pfn_glPointSize;
-    PFN_tkGLPolygonMode    pfn_glPolygonMode;
+    PFNGLCULLFACEPROC          pfn_glGullFace;
+    PFNGLFRONTFACEPROC         pfn_glFrontFace;
+    PFNGLHINTPROC              pfn_glHint;
+    PFNGLLINEWIDTHPROC         pfn_glLineWidth;
+    PFNGLPOINTSIZEPROC         pfn_glPointSize;
+    PFNGLPOLYGONMODEPROC       pfn_glPolygonMode;
+    PFNGLSCISSORPROC           pfn_glScissor;
+    PFNGLTEXPARAMETERFPROC     pfn_glTexParameterf;
+    PFNGLTEXPARAMETERFVPROC    pfn_glTexParameterfv;
+    PFNGLTEXPARAMETERIPROC     pfn_glTexParameteri;
+    PFNGLTEXPARAMETERIVPROC    pfn_glTexParameteriv;
+    PFNGLTEXIMAGE1DPROC        pfn_glTexImage1D;
+    PFNGLTEXIMAGE2DPROC        pfn_glTexImage2D;
+    PFNGLDRAWBUFFERPROC        pfn_glDrawBuffer;
+    PFNGLCLEARPROC             pfn_glClear;
+    PFNGLCLEARCOLORPROC        pfn_glClearColor;
+    PFNGLCLEARSTENCILPROC      pfn_glClearStencil;
+    PFNGLCLEARDEPTHPROC        pfn_glClearDepth;
+    PFNGLSTENCILMASKPROC       pfn_glStencilMask;
+    PFNGLCOLORMASKPROC         pfn_glColorMask;
+    PFNGLDEPTHMASKPROC         pfn_glDepthMask;
+    PFNGLDISABLEPROC           pfn_glDisable;
+    PFNGLENABLEPROC            pfn_glEnable;
+    PFNGLFINISHPROC            pfn_glFinish;
+    PFNGLFLUSHPROC             pfn_glFlush;
+    PFNGLBLENDFUNCPROC         pfn_glBlendFunc;
+    PFNGLLOGICOPPROC           pfn_glLogicOp;
+    PFNGLSTENCILFUNCPROC       pfn_glStencilFunc;
+    PFNGLSTENCILOPPROC         pfn_glStencilOp;
+    PFNGLDEPTHFUNCPROC         pfn_glDepthFunc;
+    PFNGLPIXELSTOREFPROC       pfn_glPixelStoref;
+    PFNGLPIXELSTOREIPROC       pfn_glPixelStorei;
+    PFNGLREADBUFFERPROC        pfn_glReadBuffer;
+    PFNGLREADPIXELSPROC        pfn_glReadPixels;
+    PFNGLGETBOOLEANVPROC       pfn_glGetBooleanv;
+    PFNGLGETDOUBLEVPROC        pfn_glGetDoublev;
 } TkGLInterface_T;
 
 TkResult TK_CALL tkCreateGLInterface(void* Allocator, TkGLInterface* p_GLInterface)
 {
-    // TO DO
+    *p_GLInterface = malloc(sizeof(TkGLInterface_T));
+
+    TkGLInterface GLInterface = *p_GLInterface;
+
+    if (GLInterface)
+    {
+        return TK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+
+    GLInterface->pfn_glGullFace    = wglGetProcAddress("glGullFace");
+    GLInterface->pfn_glFrontFace   = wglGetProcAddress("glFrontFace");
+    GLInterface->pfn_glHint        = wglGetProcAddress("glHint");
+    GLInterface->pfn_glLineWidth   = wglGetProcAddress("glLineWidth");
+    GLInterface->pfn_glPointSize   = wglGetProcAddress("glPointSize");
+    GLInterface->pfn_glPolygonMode = wglGetProcAddress("glPolygonMode");
 
     return TK_SUCCESS;
 }
 
 void TK_CALL tkDestroyGLInterface(TkGLInterface GLInterface)
 {
-    // TO DO
+    free(GLInterface);
 }
 
 void tkGLCullFace(TkGLInterface GLInterface, GLenum Mode)
