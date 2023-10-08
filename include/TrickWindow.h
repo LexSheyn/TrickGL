@@ -56,3 +56,4 @@ typedef struct TkWindowCreateInfo
 
 TK_API TkResult TK_CALL tkCreateWindow  (const TkWindowCreateInfo* p_CreateInfo, void* p_Allocator, TkWindow* p_Window);
 TK_API void     TK_CALL tkDestroyWindow (TkWindow Window, void* p_Allocator);
+TK_API tk_bool8 TK_CALL tkWindowUpdate  (TkWindow Window);

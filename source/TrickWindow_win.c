@@ -6,19 +6,20 @@
 
 #include <stdlib.h>
 
+#define TK_WINDOW_CLASS_NAME_LENGTH_NT 256
+#define TK_WINDOW_CLASS_NAME_LENGTH    255
+
 typedef struct TkWindowClass_T
 {
     ATOM                     Handle;
+    CHAR                     Name[TK_WINDOW_CLASS_NAME_LENGTH_NT];
     PFN_tkWindowProcedure    pfn_WindowProcedure;
 } TkWindowClass_T;
 
-LRESULT _tkWindowMessageReturnCode(UINT Message);
-
-TkWindowMessage _tkTranslateWindowMessage(UINT Message);
-
-TkWindowMessageData _tkExtractWindowMessageData(TkWindowMessage Message, WPARAM WParam, LPARAM LParam);
-
-LRESULT _tkWindowProcedure(HWND Handle, UINT Message, WPARAM WParam, LPARAM LParam);
+LRESULT             TK_CALL _tkWindowMessageReturnCode  (UINT Message);
+TkWindowMessage     TK_CALL _tkTranslateWindowMessage   (UINT Message);
+TkWindowMessageData TK_CALL _tkExtractWindowMessageData (UINT Message, WPARAM WParam, LPARAM LParam);
+LRESULT             TK_CALL _tkWindowProcedure          (HWND Handle, UINT Message, WPARAM WParam, LPARAM LParam);
 
 TkResult tkCreateWindowClass(const TkWindowClassCreateInfo* p_CreateInfo, void* p_Allocator, TkWindowClass* p_WindowClass)
 {
@@ -31,20 +32,46 @@ TkResult tkCreateWindowClass(const TkWindowClassCreateInfo* p_CreateInfo, void* 
         return TK_ERROR_OUT_OF_HOST_MEMORY;
     }
 
+    const HINSTANCE ModuleHandle = GetModuleHandleA(NULL);
+
     WNDCLASSEXA WindowClassInfo = { 0 };
 
-    WindowClassInfo.cbSize = sizeof(WNDCLASSEXA);
-    WindowClassInfo.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-    WindowClassInfo.lpfnWndProc = 0;
+    WindowClassInfo.cbSize        = sizeof(WNDCLASSEXA);
+    WindowClassInfo.style         = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+    WindowClassInfo.lpfnWndProc   = _tkWindowProcedure;
+    WindowClassInfo.cbClsExtra    = 0;
+    WindowClassInfo.cbWndExtra    = 0;
+    WindowClassInfo.hInstance     = ModuleHandle;
+    WindowClassInfo.hIcon         = NULL;
+    WindowClassInfo.hCursor       = NULL;
+    WindowClassInfo.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    WindowClassInfo.lpszMenuName  = NULL;
+    WindowClassInfo.lpszClassName = p_CreateInfo->Name;
+    WindowClassInfo.hIconSm       = NULL;
 
-    // TO DO
+    WindowClass->Handle = RegisterClassExA(&WindowClassInfo);
+
+    if (!WindowClass->Handle)
+    {
+        return TK_ERROR_INITIALIZATION_FAILED;
+    }
+
+    const tk_size NameLength = strlen(p_CreateInfo->Name);
+
+    memcpy(WindowClass->Name, p_CreateInfo->Name, NameLength);
+
+    WindowClass->pfn_WindowProcedure = p_CreateInfo->pfn_WindowProcedure;
 
     return TK_SUCCESS;
 }
 
 void tkDestroyWindowClass(TkWindowClass WindowClass, void* p_Allocator)
 {
-    // TO DO
+    const HINSTANCE ModuleHandle = GetModuleHandleA(NULL);
+
+    const BOOL b_Unregistered = UnregisterClassA(WindowClass->Name, ModuleHandle);
+
+    free(WindowClass);
 }
 
 LRESULT _tkWindowMessageReturnCode(UINT Message)
@@ -64,7 +91,7 @@ TkWindowMessage _tkTranslateWindowMessage(UINT Message)
     }
 }
 
-TkWindowMessageData _tkExtractWindowMessageData(TkWindowMessage Message, WPARAM WParam, LPARAM LParam)
+TkWindowMessageData _tkExtractWindowMessageData(UINT Message, WPARAM WParam, LPARAM LParam)
 {
     TkWindowMessageData MessageData = { 0 };
 
@@ -82,7 +109,7 @@ LRESULT _tkWindowProcedure(HWND Handle, UINT Message, WPARAM WParam, LPARAM LPar
 {
     const LRESULT             WindowMessageReturnCode = _tkWindowMessageReturnCode(Message);
     const TkWindowMessage     WindowMessage           = _tkTranslateWindowMessage(Message);
-    const TkWindowMessageData WindowMessageData       = _tkExtractWindowMessageData(WindowMessage, WParam, LParam);
+    const TkWindowMessageData WindowMessageData       = _tkExtractWindowMessageData(Message, WParam, LParam);
 
     TkWindowClass WindowClass = 0;
 
@@ -100,14 +127,57 @@ LRESULT _tkWindowProcedure(HWND Handle, UINT Message, WPARAM WParam, LPARAM LPar
     return DefWindowProcA(Handle, Message, WParam, LParam);
 }
 
+typedef struct TkWindow_T
+{
+    HWND    Handle;
+} TkWindow_T;
+
 TkResult tkCreateWindow(const TkWindowCreateInfo* p_CreateInfo, void* p_Allocator, TkWindow* p_Window)
 {
+    *p_Window = malloc(sizeof(TkWindow_T));
+
+    TkWindow Window = *p_Window;
+
+    if (!Window)
+    {
+        return TK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+
+    const HINSTANCE ModuleHandle = GetModuleHandleA(NULL);
+
+    Window->Handle = CreateWindowExA(0
+                                     , p_CreateInfo->Class->Name
+                                     , p_CreateInfo->Title
+                                     , 0
+                                     , p_CreateInfo->PositionX
+                                     , p_CreateInfo->PositionY
+                                     , p_CreateInfo->Width
+                                     , p_CreateInfo->Height
+                                     , p_CreateInfo->Parent->Handle
+                                     , NULL
+                                     , ModuleHandle
+                                     , Window);
+
+    if (!Window->Handle)
+    {
+        return TK_ERROR_INITIALIZATION_FAILED;
+    }
+
     return TK_SUCCESS;
 }
 
 void tkDestroyWindow(TkWindow Window, void* p_Allocator)
 {
-    // TO DO
+    const BOOL b_Destroyed = DestroyWindow(Window->Handle);
+
+    free(Window);
+}
+
+tk_bool8 tkWindowUpdate(TkWindow Window)
+{
+    const BOOL b_Updated = UpdateWindow(Window->Handle);
+
+    return (tk_bool8)b_Updated;
 }
 
 #endif // TK_WINDOWS

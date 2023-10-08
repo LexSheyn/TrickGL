@@ -10,6 +10,7 @@ typedef enum TkResult
     , TK_ERROR_UNKNOWN = -10
     , TK_ERROR_OUT_OF_HOST_MEMORY
     , TK_ERROR_OUT_OF_DEVICE_MEMORY
+    , TK_ERROR_INITIALIZATION_FAILED
 } TkResult;
 
 typedef enum TkStructureType
