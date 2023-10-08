@@ -55,7 +55,7 @@ TkResult TK_CALL tkCreateGLInterface(void* Allocator, TkGLInterface* p_GLInterfa
 
     TkGLInterface GLInterface = *p_GLInterface;
 
-    if (GLInterface)
+    if (!GLInterface)
     {
         return TK_ERROR_OUT_OF_HOST_MEMORY;
     }
