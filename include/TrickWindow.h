@@ -7,7 +7,15 @@ TK_HANDLE(TkWindowClass);
 
 typedef enum TkWindowMessage
 {
-    TK_WINDOW_MESSAGE_CREATE
+      TK_WINDOW_MESSAGE_CREATE
+    , TK_WINDOW_MESSAGE_DESTROY
+    , TK_WINDOW_MESSAGE_MOVE
+    , TK_WINDOW_MESSAGE_SIZE
+    , TK_WINDOW_MESSAGE_ACTIVATE
+    , TK_WINDOW_MESSAGE_GAIN_FOCUS
+    , TK_WINDOW_MESSAGE_LOSE_FOCUS
+    , TK_WINDOW_MESSAGE_ENABLE
+    , TK_WINDOW_MESSAGE_SET_REDRAW
 } TkWindowMessage;
 
 typedef union TkWindowMessageData
@@ -48,12 +56,30 @@ typedef struct TkWindowCreateInfo
     TkWindowClass      Class;
     TkWindow           Parent;
     const tk_char8*    Title;
-    tk_int32           PositionX;
-    tk_int32           PositionY;
+    tk_int32           X;
+    tk_int32           Y;
     tk_int32           Width;
     tk_int32           Height;
 } TkWindowCreateInfo;
 
-TK_API TkResult TK_CALL tkCreateWindow  (const TkWindowCreateInfo* p_CreateInfo, void* p_Allocator, TkWindow* p_Window);
-TK_API void     TK_CALL tkDestroyWindow (TkWindow Window, void* p_Allocator);
-TK_API tk_bool8 TK_CALL tkWindowUpdate  (TkWindow Window);
+typedef enum TkWindowShowCommand
+{
+      TK_WINDOW_SHOW_COMMAND_HIDE
+    , TK_WINDOW_SHOW_COMMAND_SHOW_NORMAL
+    , TK_WINDOW_SHOW_COMMAND_SHOW_MINIMIZED
+    , TK_WINDOW_SHOW_COMMAND_SHOW_MAXIMIZED
+    , TK_WINDOW_SHOW_COMMAND_SHOW_NORMAL_NO_ACTIVATION
+    , TK_WINDOW_SHOW_COMMAND_SHOW
+    , TK_WINDOW_SHOW_COMMAND_MINIMIZE
+    , TK_WINDOW_SHOW_COMMAND_SHOW_MINIMIZED_NO_ACTIVATION
+    , TK_WINDOW_SHOW_COMMAND_SHOW_NO_ACTIVATION
+    , TK_WINDOW_SHOW_COMMAND_RESTORE
+    , TK_WINDOW_SHOW_COMMAND_SHOW_DEFAULT
+    , TK_WINDOW_SHOW_COMMAND_FORCE_MINIMIZE
+} TkWindowShowCommand;
+
+TK_API TkResult TK_CALL tkCreateWindow          (const TkWindowCreateInfo* p_CreateInfo, void* p_Allocator, TkWindow* p_Window);
+TK_API void     TK_CALL tkDestroyWindow         (TkWindow Window, void* p_Allocator);
+TK_API tk_bool8 TK_CALL tkWindowUpdate          (TkWindow Window);
+TK_API tk_bool8 TK_CALL tkWindowShow            (TkWindow Window, TkWindowShowCommand ShowCommand);
+TK_API tk_bool8 TK_CALL tkWindowProcessMessages (TkWindow Window);

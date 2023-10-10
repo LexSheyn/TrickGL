@@ -76,9 +76,20 @@ void tkDestroyWindowClass(TkWindowClass WindowClass, void* p_Allocator)
 
 LRESULT _tkWindowMessageReturnCode(UINT Message)
 {
-    // TO DO
+    switch (Message)
+    {
+        case WM_CREATE: return 0;
+        case WM_DESTROY: return 0;
+        case WM_MOVE: return 0;
+        case WM_SIZE: return 0;
+        case WM_ACTIVATE: return 0;
+        case WM_SETFOCUS: return 0;
+        case WM_KILLFOCUS: return 0;
+        case WM_ENABLE: return 0;
+        case WM_SETREDRAW: return 0;
 
-    return 0;
+        default: return -1;
+    }
 }
 
 TkWindowMessage _tkTranslateWindowMessage(UINT Message)
@@ -86,6 +97,14 @@ TkWindowMessage _tkTranslateWindowMessage(UINT Message)
     switch (Message)
     {
         case WM_CREATE: return TK_WINDOW_MESSAGE_CREATE;
+        case WM_DESTROY: return TK_WINDOW_MESSAGE_DESTROY;
+        case WM_MOVE: return TK_WINDOW_MESSAGE_MOVE;
+        case WM_SIZE: return TK_WINDOW_MESSAGE_SIZE;
+        case WM_ACTIVATE: return TK_WINDOW_MESSAGE_ACTIVATE;
+        case WM_SETFOCUS: return TK_WINDOW_MESSAGE_GAIN_FOCUS;
+        case WM_KILLFOCUS: return TK_WINDOW_MESSAGE_LOSE_FOCUS;
+        case WM_ENABLE: return TK_WINDOW_MESSAGE_ENABLE;
+        case WM_SETREDRAW: return TK_WINDOW_MESSAGE_SET_REDRAW;
 
         default: return -1;
     }
@@ -97,7 +116,13 @@ TkWindowMessageData _tkExtractWindowMessageData(UINT Message, WPARAM WParam, LPA
 
     switch (Message)
     {
-        // TO DO
+        case WM_CREATE:
+        {
+            CREATESTRUCTA* CreateStruct = (CREATESTRUCTA*)LParam;
+
+            // Embed TkWindowCreateInfo structure into TkWindow?
+            // Pass pointer to it as TkWindowMessageData along with TK_WINDOW_MESSAGE_CREATE?
+        }
 
         default: break;
     }
@@ -107,15 +132,35 @@ TkWindowMessageData _tkExtractWindowMessageData(UINT Message, WPARAM WParam, LPA
 
 LRESULT _tkWindowProcedure(HWND Handle, UINT Message, WPARAM WParam, LPARAM LParam)
 {
+    switch (Message)
+    {
+        case WM_NCCREATE:
+        {
+            CREATESTRUCTA* CreateStruct = (CREATESTRUCTA*)LParam;
+
+            SetWindowLongPtrA(Handle, GWLP_USERDATA, (LONG_PTR)CreateStruct->lpCreateParams);
+
+            return DefWindowProcA(Handle, Message, WParam, LParam);
+        }
+
+        default: break;
+    }
+
     const LRESULT             WindowMessageReturnCode = _tkWindowMessageReturnCode(Message);
     const TkWindowMessage     WindowMessage           = _tkTranslateWindowMessage(Message);
     const TkWindowMessageData WindowMessageData       = _tkExtractWindowMessageData(Message, WParam, LParam);
 
-    TkWindowClass WindowClass = 0;
+    ATOM WindowClassHandle = (ATOM)GetClassLongPtrA(Handle, GCW_ATOM);
+
+    // Specify extra memory for the window class when creating it.
+    // Try to access it by using SetClassLongPtrA/GetClassLongPtrA with right after the las available index,
+    // allocated extra memory might be there.
 
     // TO DO: Get window class from HWND, then get TkWindowClass from window class user data here.
 
     TkWindow Window = (TkWindow)GetWindowLongPtrA(Handle, GWLP_USERDATA);
+
+    TkWindowClass WindowClass = Window->Class;
 
     // TO DO: Get TkWindow from HWND user data here.
 
@@ -129,7 +174,8 @@ LRESULT _tkWindowProcedure(HWND Handle, UINT Message, WPARAM WParam, LPARAM LPar
 
 typedef struct TkWindow_T
 {
-    HWND    Handle;
+    HWND             Handle;
+    TkWindowClass    Class;
 } TkWindow_T;
 
 TkResult tkCreateWindow(const TkWindowCreateInfo* p_CreateInfo, void* p_Allocator, TkWindow* p_Window)
@@ -149,8 +195,8 @@ TkResult tkCreateWindow(const TkWindowCreateInfo* p_CreateInfo, void* p_Allocato
                                      , p_CreateInfo->Class->Name
                                      , p_CreateInfo->Title
                                      , 0
-                                     , p_CreateInfo->PositionX
-                                     , p_CreateInfo->PositionY
+                                     , p_CreateInfo->X
+                                     , p_CreateInfo->Y
                                      , p_CreateInfo->Width
                                      , p_CreateInfo->Height
                                      , p_CreateInfo->Parent->Handle
@@ -162,6 +208,8 @@ TkResult tkCreateWindow(const TkWindowCreateInfo* p_CreateInfo, void* p_Allocato
     {
         return TK_ERROR_INITIALIZATION_FAILED;
     }
+
+    Window->Class = p_CreateInfo->Class;
 
     return TK_SUCCESS;
 }
@@ -178,6 +226,32 @@ tk_bool8 tkWindowUpdate(TkWindow Window)
     const BOOL b_Updated = UpdateWindow(Window->Handle);
 
     return (tk_bool8)b_Updated;
+}
+
+tk_bool8 tkWindowShow(TkWindow Window, TkWindowShowCommand ShowCommand)
+{
+    const BOOL b_Visible = ShowWindow(Window->Handle, (INT)ShowCommand);
+
+    return (tk_bool8)b_Visible;
+}
+
+tk_bool8 tkWindowProcessMessages(TkWindow Window)
+{
+    MSG Msg;
+
+    while (PeekMessageA(&Msg, Window->Handle, 0, 0, PM_REMOVE))
+    {
+        if (Msg.message == WM_QUIT)
+        {
+            return TK_FALSE;
+        }
+
+        TranslateMessage(&Msg);
+
+        DispatchMessageA(&Msg);
+    }
+
+    return TK_TRUE;
 }
 
 #endif // TK_WINDOWS
