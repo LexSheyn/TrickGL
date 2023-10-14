@@ -49,17 +49,40 @@ typedef struct TkWindowClassCreateInfo
 TK_API TkResult TK_CALL tkCreateWindowClass  (const TkWindowClassCreateInfo* p_CreateInfo, void* p_Allocator, TkWindowClass* p_WindowClass);
 TK_API void     TK_CALL tkDestroyWindowClass (TkWindowClass WindowClass, void* p_Allocator);
 
+typedef enum TkWindowStyleFlagBits
+{
+      TK_WINDOW_STYLE_THIN_FRAME        = 1 << 0
+    , TK_WINDOW_STYLE_RESIZE_FRAME      = 1 << 1
+    , TK_WINDOW_STYLE_TITLE             = 1 << 2
+    , TK_WINDOW_STYLE_MENU              = 1 << 3
+    , TK_WINDOW_STYLE_MINIMIZE_BUTTON   = 1 << 4
+    , TK_WINDOW_STYLE_MAXIMIZE_BUTTON   = 1 << 5
+    , TK_WINDOW_STYLE_HORIZONTAL_SCROLL = 1 << 6
+    , TK_WINDOW_STYLE_VERTICAL_SCROLL   = 1 << 7
+    , TK_WINDOW_STYLE_DEFAULT           = TK_WINDOW_STYLE_RESIZE_FRAME | TK_WINDOW_STYLE_TITLE | TK_WINDOW_STYLE_MENU | TK_WINDOW_STYLE_MINIMIZE_BUTTON | TK_WINDOW_STYLE_MAXIMIZE_BUTTON
+} TkWindowStyleFlagBits;
+typedef TkFlags TkWindowStyleFlags;
+
+typedef enum TkWindowExtensionFlagBits
+{
+      TK_WINDOW_EXTENSION_DRAG_DROP_FILES = 1 << 0
+    , TK_WINDOW_EXTENSION_TOPMOST         = 1 << 1
+} TkWindowExtensionFlagBits;
+typedef TkFlags TkWindowExtensionFlags;
+
 typedef struct TkWindowCreateInfo
 {
-    TkStructureType    StructureType;
-    const void*        p_Next;
-    TkWindowClass      Class;
-    TkWindow           Parent;
-    const tk_char8*    Title;
-    tk_int32           X;
-    tk_int32           Y;
-    tk_int32           Width;
-    tk_int32           Height;
+    TkStructureType           StructureType;
+    const void*               p_Next;
+    TkWindowClass             Class;
+    TkWindow                  Parent;
+    const tk_char8*           Title;
+    tk_int32                  X;
+    tk_int32                  Y;
+    tk_int32                  Width;
+    tk_int32                  Height;
+    TkWindowStyleFlags        StyleFlags;
+    TkWindowExtensionFlags    ExtensionFlags;
 } TkWindowCreateInfo;
 
 typedef enum TkWindowShowCommand

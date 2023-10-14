@@ -78,14 +78,14 @@ LRESULT _tkWindowMessageReturnCode(UINT Message)
 {
     switch (Message)
     {
-        case WM_CREATE: return 0;
-        case WM_DESTROY: return 0;
-        case WM_MOVE: return 0;
-        case WM_SIZE: return 0;
-        case WM_ACTIVATE: return 0;
-        case WM_SETFOCUS: return 0;
+        case WM_CREATE:    return 0;
+        case WM_DESTROY:   return 0;
+        case WM_MOVE:      return 0;
+        case WM_SIZE:      return 0;
+        case WM_ACTIVATE:  return 0;
+        case WM_SETFOCUS:  return 0;
         case WM_KILLFOCUS: return 0;
-        case WM_ENABLE: return 0;
+        case WM_ENABLE:    return 0;
         case WM_SETREDRAW: return 0;
 
         default: return -1;
@@ -96,14 +96,14 @@ TkWindowMessage _tkTranslateWindowMessage(UINT Message)
 {
     switch (Message)
     {
-        case WM_CREATE: return TK_WINDOW_MESSAGE_CREATE;
-        case WM_DESTROY: return TK_WINDOW_MESSAGE_DESTROY;
-        case WM_MOVE: return TK_WINDOW_MESSAGE_MOVE;
-        case WM_SIZE: return TK_WINDOW_MESSAGE_SIZE;
-        case WM_ACTIVATE: return TK_WINDOW_MESSAGE_ACTIVATE;
-        case WM_SETFOCUS: return TK_WINDOW_MESSAGE_GAIN_FOCUS;
+        case WM_CREATE:    return TK_WINDOW_MESSAGE_CREATE;
+        case WM_DESTROY:   return TK_WINDOW_MESSAGE_DESTROY;
+        case WM_MOVE:      return TK_WINDOW_MESSAGE_MOVE;
+        case WM_SIZE:      return TK_WINDOW_MESSAGE_SIZE;
+        case WM_ACTIVATE:  return TK_WINDOW_MESSAGE_ACTIVATE;
+        case WM_SETFOCUS:  return TK_WINDOW_MESSAGE_GAIN_FOCUS;
         case WM_KILLFOCUS: return TK_WINDOW_MESSAGE_LOSE_FOCUS;
-        case WM_ENABLE: return TK_WINDOW_MESSAGE_ENABLE;
+        case WM_ENABLE:    return TK_WINDOW_MESSAGE_ENABLE;
         case WM_SETREDRAW: return TK_WINDOW_MESSAGE_SET_REDRAW;
 
         default: return -1;
@@ -191,10 +191,10 @@ TkResult tkCreateWindow(const TkWindowCreateInfo* p_CreateInfo, void* p_Allocato
 
     const HINSTANCE ModuleHandle = GetModuleHandleA(NULL);
 
-    Window->Handle = CreateWindowExA(0
+    Window->Handle = CreateWindowExA((DWORD)p_CreateInfo->ExtensionFlags
                                      , p_CreateInfo->Class->Name
                                      , p_CreateInfo->Title
-                                     , 0
+                                     , (DWORD)p_CreateInfo->StyleFlags
                                      , p_CreateInfo->X
                                      , p_CreateInfo->Y
                                      , p_CreateInfo->Width
